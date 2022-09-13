@@ -64,23 +64,26 @@ public class FileSharerPlugin extends Plugin {
             return;
         }
 
-        String path = ConfigUtils.getParamString(callData, PARAM_LOCAL_PATH);
-        if (path != null && path.length() > 0) {
-            String[] parts = path.split("_capacitor_file_");
-            if (parts[1] != null) {
-                path = parts[1];
-            }
-            try {
-                InputStream is = new FileInputStream(new File(path));
-                base64Data = readFileAsBase64EncodedData(is);
-            } catch (IOException e) {
-                Log.e(getLogTag(), e.getMessage());
-                call.reject(ERR_LOCAL_FILE_NOT_FOUND);
+        byte[] decodedData = new byte[0];
+        String base64Data = ConfigUtils.getParamString(callData, PARAM_BASE64_DATA);
+        if (base64Data == null || base64Data.length() == 0) {
+            String path = ConfigUtils.getParamString(callData, PARAM_LOCAL_PATH);
+            if (path != null && path.length() > 0) {
+                String[] parts = path.split("_capacitor_file_");
+                if (parts[1] != null) {
+                    path = parts[1];
+                }
+                try {
+                    decodedData = Files.readAllBytes(((new File(path)).toPath()));
+                } catch (IOException e) {
+                    Log.e(getLogTag(), e.getMessage());
+                    call.reject(ERR_LOCAL_FILE_NOT_FOUND);
+                    return;
+                }
+            } else {
+                call.reject(ERR_PARAM_NO_DATA);
                 return;
             }
-        } else {
-            call.reject(ERR_PARAM_NO_DATA);
-            return;
         }
 
         String chooserTitle = ConfigUtils.getParamString(callData, PARAM_ANDROID_CHOOSER);
@@ -88,8 +91,11 @@ public class FileSharerPlugin extends Plugin {
 
         // save cachedFile to cache dir
         File cachedFile = new File(getCacheDir(), filename);
+
         try (FileOutputStream fos = new FileOutputStream(cachedFile)) {
-            byte[] decodedData = Base64.decode(base64Data, Base64.DEFAULT);
+            if (decodedData.length == 0) {
+                decodedData = Base64.decode(base64Data, Base64.DEFAULT);
+            }
             fos.write(decodedData);
             fos.flush();
         } catch (IOException e) {
