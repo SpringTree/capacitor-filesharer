@@ -1,5 +1,9 @@
 # Capacitor File Sharing plugin
 
+This plugin is based on https://github.com/moberwasserlechner/capacitor-filesharer.
+
+The main difference between this package and the original is that this one supports a filepath, instead of a base64 string allowing you to share bigger files without crashing an average Android device.
+
 <a href="https://github.com/moberwasserlechner/capacitor-filesharer/actions?query=workflow%3ACI"><img src="https://img.shields.io/github/workflow/status/moberwasserlechner/capacitor-filesharer/CI?style=flat-square" /></a>
 <a href="https://www.npmjs.com/package/@byteowls/capacitor-filesharer"><img src="https://img.shields.io/npm/dw/@byteowls/capacitor-filesharer?style=flat-square" /></a>
 <a href="https://www.npmjs.com/package/@byteowls/capacitor-filesharer"><img src="https://img.shields.io/npm/v/@byteowls/capacitor-filesharer?style=flat-square" /></a>
@@ -46,8 +50,11 @@ export class SignupComponent {
     downloadButtonClick() {
         FileSharer.share({
             filename: "test.pdf",
-            base64Data: "...",
             contentType: "application/pdf",
+            // If you want to save base64:
+            base64Data: "...",
+            // If you want to save a file from a path:
+            path: "../../..",
         }).then(() => {
             // do sth
         }).catch(error => {
