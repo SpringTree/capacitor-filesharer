@@ -3,10 +3,12 @@ package com.byteowls.capacitor.filesharer;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
+import androidx.annotation.RequiresApi;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -21,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Objects;
 
 @CapacitorPlugin(name = "FileSharer")
@@ -46,6 +49,7 @@ public class FileSharerPlugin extends Plugin {
 
     public FileSharerPlugin() {}
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @PluginMethod()
     public void share(final PluginCall call) {
         final String fileProviderName = getContext().getPackageName() + ".filesharer.fileprovider";
